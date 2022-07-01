@@ -1,0 +1,14 @@
+---
+name: lint-git-pull-request
+
+on: { pull_request: { branches: ["**", "!master"] } }
+
+jobs:
+  lint-git-pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v2
+      - name: Lint commits, branches, and pull requests
+        uses: MisoRobotics/gitlint-action@v1
+

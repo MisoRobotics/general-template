@@ -1,19 +1,30 @@
 # -*- Makefile -*-
+MAKEFLAGS += --warn-undefined-variables
+SHELL := bash
+.SHELLFLAGS := -eu -o pipefail -c
+.DEFAULT_GOAL := help
+.DELETE_ON_ERROR:
+.SUFFIXES:
 
-IMAGE_NAME := general-template
-CONTAINER_NAME := general-template
+container := general-template
+image := $(container)
 
-default:
-	@echo "Read the makefile"
+.PHONY: help
+help: ## Show usage information for this Makefile.
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-build:
-	docker build -t $(IMAGE_NAME) .
+.PHONY: build
+build: ## Build the container locally for testing.
+	env DOCKER_BUILDKIT=1 docker build -t $(image) .
 
-run:
-	docker run --restart unless-stopped --name $(CONTAINER_NAME) -d $(IMAGE_NAME)
+.PHONY: run
+run: ## Run the container in development mode.
+	docker run --restart unless-stopped --name $(CONTAINER_NAME) -d $(image)
 
-test:
+.PHONY: test
+test: ## Run unit tests.
 	@echo "Implement me"
 
-shell:
-	docker exec -it $(CONTAINER_NAME) /bin/bash
+.PHONY: shell
+shell: ## Open a shell into the running container.
+	docker exec -it $(container) bash
